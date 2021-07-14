@@ -131,18 +131,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT=BASE_DIR/"static"
-# #heroku
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
-#  STATICFILES_DIRS = [
-#      BASE_DIR / "static",
-#      '/var/www/static/',
-#  ]
-
 #managing media
-MEDIA_URL="/media/"   #this add media in URL
-MEDIA_ROOT=os.path.join(BASE_DIR,'media')   #this make media folder
+MEDIA_URL='/media/'   #this add media in URL
+MEDIA_ROOT=BASE_DIR/"media"  #this make media folder
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
