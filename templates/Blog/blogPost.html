@@ -1,0 +1,110 @@
+{% extends 'basic.html' %}
+{% block title %}BlogPost{% endblock title %}
+{% block body %}
+{% load extras %}
+<div class="container">
+    <div class="row g-2">
+        <div class="col-md-8">
+            <h3 class="pb-4 my-4 fst-italic border-bottom">
+                From TechBlog's
+            </h3>
+            <article class="blog-post">
+                <h2 class="blog-post-title">{{data.title}}</h2>
+                <p class="blog-post-meta">{{data.date}}</p>
+                <p>{{data.content|safe}}</p>
+                <i class="my-2">Author :- <b>{{data.author}}</b></i>
+        </div>
+    </div>
+    <hr>
+    <di class="container">{% load humanize %}
+        <h2>({{comments.count}}) Comments</h2><br>
+        <hr class="mt-3">
+        {% if user.is_authenticated %}
+        <!-- comment input -->
+        <form class=" row" action="/blog/postComment/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="postSno" value="{{data.sno}}">
+            <div class="mb-3 col-md-6">
+                <input type="text" class="form-control p-2 border border-primary rounded" name="comment" required
+                    placeholder="Write Comment...">
+                <input type="hidden" name="parentSno" value="">
+            </div>
+            <div class="mb-3 col-md-3">
+                <button type="submit" class="btn btn-primary "><i
+                        class="material-icons small pt-2 mx-3">send</i></button>
+            </div>
+        </form>
+        <!-- displying all comment -->
+        {% for comment in comments %}
+        <div class="row my-2 border p-2">
+            <div class="col-md-1  ">
+                <img style="width:45px;margin:10px;border-radius:50%;" class="mx-auto border "
+                    src="/static/img/user.png" alt="user">
+            </div>
+            <div style="margin-top: -0.4rem;" class="col-md-11">
+                <b class="text-primary"> {{comment.user.username}} </b>
+                <span class="small -mt-4"> {{comment.timestamp|naturaltime}}</span><button class="btn btn-primary m-3"
+                    data-toggle="collapse" type="button" data-target="#reply{{comment.sno}}" aria-expanded="false"
+                    aria-controls="reply{{comment.sno}}"><i class="material-icons">reply</i>
+                </button>
+                <div> {{comment.comment}} </div>
+            </div>
+        </div>
+        <!-- reply box -->
+        <div class="collapse" id="reply{{comment.sno}}">
+            <div class="card card-body my-2">
+                <form class="row" action="/blog/postComment/" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="postSno" value="{{data.sno}}">
+                    <div class=" col-md-6">
+                        <input type="text" class="form-control p-2 border border-primary rounded" name="comment"
+                            required placeholder="Write Comment...">
+                        <input type="hidden" name="parentSno" value="{{comment.sno}}">
+                        <input type="hidden" name="postSno" value="{{data.sno}}">
+                        <button class="btn btn-primary mt-2" type="submit"><i
+                                class="material-icons small pt-2 mx-3">send</i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Reply to comment -->
+        {% for reply in replyDict|get_val:comment.sno %}
+            <div class="row my-2 border p-2">
+                <div class="col-md-1">
+                    <img style="width:45px;margin:10px;border-radius:50%;" class="mx-auto border"
+                        src="/static/img/user.png" alt="user">
+                </div>
+                <div class="col-md-11 mt-2">
+                    <b class="text-primary"> {{reply.user.username}} </b>
+                    <span class=" ">{{reply.timestamp|naturaltime}}<i
+                            class="material-icons small pt-2 mx-3">reply</i></span>
+                    <div> {{reply.comment}} </div>
+
+                </div>
+            </div>
+        {% endfor %}
+        <!-- outer for loop for replies  -->
+        {% endfor %}
+        <!-- outer for loop for comments -->
+        {% else %}
+        <!-- else condition if usuer is not authenticated -->
+        <h3>Please Login to post Comment</h3>
+        {% for comment in comments %}
+        <div class="row my-2 border p-2">
+            <div class=" col-md-1  ">
+                <img style="width:45px;margin:10px;border-radius:50%;" class="mx-auto border" src="/static/img/user.png"
+                    alt="user">
+            </div>
+            <div class="col-md-11 mt-2">
+                <b class="text-primary"> {{comment.user.username}} </b>
+                <span class=" ">{{comment.timestamp|naturaltime}}
+                </span>
+
+                <div> {{comment.comment}} </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </di>
+</div>
+{% endblock body %}
